@@ -353,7 +353,6 @@
 const promptInput = document.getElementById("prompt");
 const sendButton = document.getElementById("send");
 const chat = document.getElementById("chat");
-const welcome = document.getElementById("welcome");
 
 
 function sendMessage() {
@@ -363,15 +362,35 @@ function sendMessage() {
     if (!text) return;
 
 
-    /* Remove welcome screen */
+    // SAVE QUESTION TO R2
+    fetch("https://cfatgpt-logger.phil-roberts90.workers.dev/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            prompt: text
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error("Failed to save prompt");
+        }
+    })
+    .catch(error => {
+        console.error("Logger error:", error);
+    });
+
+
+    // Remove welcome screen
+    const welcome = document.getElementById("welcome");
 
     if (welcome) {
         welcome.style.display = "none";
     }
 
 
-    /* User message */
-
+    // USER MESSAGE
     const userMessage = document.createElement("div");
 
     userMessage.className = "message user-message";
@@ -390,8 +409,7 @@ function sendMessage() {
     sendButton.disabled = true;
 
 
-    /* Fake AI response */
-
+    // FAKE AI RESPONSE
     const assistant = document.createElement("div");
 
     assistant.className = "message assistant-message";
@@ -418,8 +436,7 @@ function sendMessage() {
     chat.scrollTop = chat.scrollHeight;
 
 
-    /* Wait 10 seconds */
-
+    // WAIT 10 SECONDS
     setTimeout(() => {
 
         const response =
@@ -441,12 +458,14 @@ function sendMessage() {
 }
 
 
+// SEND BUTTON
 sendButton.addEventListener(
     "click",
     sendMessage
 );
 
 
+// ENTER KEY
 promptInput.addEventListener(
     "keydown",
     function(event) {
@@ -459,6 +478,7 @@ promptInput.addEventListener(
 );
 
 
+// NEW CHAT
 function newChat() {
 
     chat.innerHTML = `
@@ -480,13 +500,13 @@ function newChat() {
 
 </script>
 
-
 <!-- Cloudflare Web Analytics -->
 <script
     type="module"
     src="https://static.cloudflareinsights.com/beacon.min.js"
     data-cf-beacon='{"token":"60dc819400ec4fe5bb2b3ff9ef46e7d0"}'>
 </script>
+
 <!-- End Cloudflare Web Analytics -->
 
 
